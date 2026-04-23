@@ -43,12 +43,6 @@ ui-options-admin-sounds = Play Admin Sounds
 ui-options-bwoink-sound = Play AHelp Notification Sound
 ui-options-volume-label = Volume
 ui-options-radio-chime-mute = Play Radio Chime
-ui-options-tts-label = TTS Options
-ui-options-tts-enabled = Enable TTS
-ui-options-tts-radio-queue-enabled = Enable TTS (Radio)
-ui-options-tts-volume = TTS Volume
-ui-options-tts-radio-volume = TTS Volume (Radio)
-ui-options-tts-announce-volume = TTS Volume (Announcements)
 
 ## Graphics menu
 
