@@ -1,0 +1,81 @@
+# Male Voices
+- type: ttsVoice
+  id: Ryan
+  name: Ryan
+  model: en_US-ryan-medium
+
+- type: ttsVoice
+  id: Joe
+  name: Joe
+  model: en_US-joe-medium
+
+- type: ttsVoice
+  id: John
+  name: John
+  model: en_US-john-medium
+
+- type: ttsVoice
+  id: Danny
+  name: Danny
+  model: en_US-danny-low
+
+- type: ttsVoice
+  id: Alan
+  name: Alan
+  model: en_GB-alan-medium
+
+- type: ttsVoice
+  id: Norman
+  name: Norman
+  model: en_US-norman-medium
+
+- type: ttsVoice
+  id: Arctic
+  name: Arctic
+  model: en_US-arctic-medium
+
+- type: ttsVoice
+  id: Bryce
+  name: Bryce
+  model: en_US-bryce-medium
+
+# Female Voices
+- type: ttsVoice
+  id: Amy
+  name: Amy
+  model: en_US-amy-medium
+
+- type: ttsVoice
+  id: Lessac
+  name: Lessac
+  model: en_US-lessac-medium
+
+- type: ttsVoice
+  id: Kathleen
+  name: Kathleen
+  model: en_US-kathleen-low
+
+- type: ttsVoice
+  id: Kristin
+  name: Kristin
+  model: en_US-kristin-medium
+
+- type: ttsVoice
+  id: Jenny
+  name: Jenny
+  model: en_GB-jenny_dioco-medium
+
+- type: ttsVoice
+  id: Alba
+  name: Alba
+  model: en_GB-alba-medium
+
+- type: ttsVoice
+  id: Cori
+  name: Cori
+  model: en_GB-cori-medium
+
+- type: ttsVoice
+  id: Ljspeech
+  name: Ljspeech
+  model: en_US-ljspeech-medium

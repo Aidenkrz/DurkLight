@@ -28,3 +28,14 @@ public record struct RadioSendAttemptEvent(RadioChannelPrototype Channel, Entity
     public readonly EntityUid RadioSource = RadioSource;
     public bool Cancelled = false;
 }
+
+/// <summary>
+/// Raised after a radio message has been sent to all receivers.
+/// </summary>
+public sealed class RadioSpokeEvent(EntityUid messageSource, string message, RadioChannelPrototype channel, List<EntityUid> receivers) : EntityEventArgs
+{
+    public EntityUid MessageSource { get; } = messageSource;
+    public string Message { get; } = message;
+    public RadioChannelPrototype Channel { get; } = channel;
+    public List<EntityUid> Receivers { get; } = receivers;
+}

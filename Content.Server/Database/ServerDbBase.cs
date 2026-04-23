@@ -206,6 +206,9 @@ namespace Content.Server.Database
                 gender = genderVal;
 
             var balance = profile.BankBalance;
+            var voice = profile.Voice;
+            if (voice == string.Empty)
+                voice = SharedHumanoidAppearanceSystem.DefaultSexVoice[sex];
 
             // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
             var markingsRaw = profile.Markings?.Deserialize<List<string>>();
@@ -270,6 +273,7 @@ namespace Content.Server.Database
                 profile.FlavorText,
                 profile.Species,
                 profile.CustomSpecies,
+                profile.Voice,
                 profile.Age,
                 sex,
                 gender,
@@ -314,6 +318,7 @@ namespace Content.Server.Database
             profile.FlavorText = humanoid.FlavorText;
             profile.Species = humanoid.Species;
             profile.CustomSpecies = humanoid.CustomSpecies;
+            profile.Voice = humanoid.Voice;
             profile.Age = humanoid.Age;
             profile.Sex = humanoid.Sex.ToString();
             profile.Gender = humanoid.Gender.ToString();

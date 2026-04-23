@@ -151,6 +151,7 @@ public sealed class RadioSystem : EntitySystem
         var hasActiveServer = HasActiveServer(sourceMapId, channel.ID);
         var sourceServerExempt = _exemptQuery.HasComp(radioSource);
 
+        var receivers = new List<EntityUid>();
         var radioQuery = EntityQueryEnumerator<ActiveRadioComponent, TransformComponent>();
 
         if (frequency == null) // Nuclear-14
@@ -185,7 +186,11 @@ public sealed class RadioSystem : EntitySystem
 
             // send the message
             RaiseLocalEvent(receiver, ref ev);
+            receivers.Add(receiver);
         }
+
+        if (receivers.Count > 0)
+            RaiseLocalEvent(new RadioSpokeEvent(messageSource, message, channel, receivers));
 
         if (name != Name(messageSource))
             _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Radio message from {ToPrettyString(messageSource):user} as {name} on {channel.LocalizedName}: {message}");

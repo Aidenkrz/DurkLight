@@ -10,6 +10,7 @@ using Content.Shared.Preferences.Loadouts;
 using Content.Shared.Roles;
 using Content.Shared.Traits;
 using Robust.Shared.Collections;
+using Content.Shared.TTS;
 using Robust.Shared.Configuration;
 using Robust.Shared.Enums;
 using Robust.Shared.Player;
@@ -92,6 +93,9 @@ namespace Content.Shared.Preferences
         public string CustomSpecies { get; set; } = string.Empty;
 
         [DataField]
+        public string Voice { get; set; } = "TEST";
+
+        [DataField]
         public int Age { get; set; } = 18;
 
         [DataField]
@@ -153,6 +157,7 @@ namespace Content.Shared.Preferences
             string flavortext,
             string species,
             string customSpecies,
+            string voice,
             int age,
             Sex sex,
             Gender gender,
@@ -171,6 +176,7 @@ namespace Content.Shared.Preferences
             FlavorText = flavortext;
             Species = species;
             CustomSpecies = customSpecies;
+            Voice = voice;
             Age = age;
             Sex = sex;
             Gender = gender;
@@ -193,7 +199,7 @@ namespace Content.Shared.Preferences
             HashSet<ProtoId<AntagPrototype>> antagPreferences,
             HashSet<ProtoId<TraitPrototype>> traitPreferences,
             Dictionary<string, RoleLoadout> loadouts)
-            : this(other.Name, other.FlavorText, other.Species, other.CustomSpecies, other.Age, other.Sex, other.Gender, other.BankBalance, other.Appearance, other.SpawnPriority,
+            : this(other.Name, other.FlavorText, other.Species, other.CustomSpecies, other.Voice, other.Age, other.Sex, other.Gender, other.BankBalance, other.Appearance, other.SpawnPriority,
                 jobPriorities, other.PreferenceUnavailable, antagPreferences, traitPreferences, loadouts, other.Company)
         {
         }
@@ -204,6 +210,7 @@ namespace Content.Shared.Preferences
                 other.FlavorText,
                 other.Species,
                 other.CustomSpecies,
+                other.Voice,
                 other.Age,
                 other.Sex,
                 other.Gender,
@@ -320,6 +327,11 @@ namespace Content.Shared.Preferences
                 speciesLoadout.SetDefault(profile, null, prototypeManager);
             }
 
+            profile.Voice = random.Pick(prototypeManager
+                .EnumeratePrototypes<TTSVoicePrototype>()
+                .Where(o => CanHaveVoice(o, sex)).ToArray()
+            ).ID;
+
             return profile.WithSpeciesLoadout(speciesLoadout);
             // Far Horizons End
         }
@@ -361,6 +373,10 @@ namespace Content.Shared.Preferences
             return new(this) { Species = species };
         }
 
+        public HumanoidCharacterProfile WithVoice(string voice)
+        {
+             return new(this) { Voice = voice };
+        }
 
         public HumanoidCharacterProfile WithCharacterAppearance(HumanoidCharacterAppearance appearance)
         {
@@ -592,8 +608,11 @@ namespace Content.Shared.Preferences
             {
                 name = Name;
             }
-
             name = name.Trim();
+
+            prototypeManager.TryIndex<TTSVoicePrototype>(Voice, out var voice);
+            if (voice is null || !CanHaveVoice(voice, Sex))
+                Voice = SharedHumanoidAppearanceSystem.DefaultSexVoice[sex];
 
             if (configManager.GetCVar(CCVars.RestrictedNames))
             {
@@ -739,6 +758,12 @@ namespace Content.Shared.Preferences
             // Far Horizons-End
         }
 
+        public static bool CanHaveVoice(TTSVoicePrototype voice, Sex _)
+        {
+            return voice.CanSelect;
+        }
+
+
         /// <summary>
         /// Takes in an IEnumerable of traits and returns a List of the valid traits.
         /// </summary>
@@ -790,6 +815,7 @@ namespace Content.Shared.Preferences
             hashCode.Add(FlavorText);
             hashCode.Add(CustomSpecies);
             hashCode.Add(Species);
+            hashCode.Add(Voice);
             hashCode.Add(Age);
             hashCode.Add((int)Sex);
             hashCode.Add((int)Gender);

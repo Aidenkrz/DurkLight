@@ -2,6 +2,8 @@ using Content.Shared.DisplacementMap;
 using Content.Shared.Humanoid.Markings;
 using Content.Shared.Humanoid.Prototypes;
 using Content.Shared.Inventory;
+using Content.Shared.Preferences;
+using Content.Shared.TTS;
 using Robust.Shared.Enums;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
@@ -54,6 +56,12 @@ public sealed partial class HumanoidAppearanceComponent : Component
     /// </summary>
     [DataField(required: true), AutoNetworkedField]
     public ProtoId<SpeciesPrototype> Species { get; set; }
+
+    /// <summary>
+    ///     Current voice.
+    /// </summary>
+    [DataField("voice")]
+    public ProtoId<TTSVoicePrototype> Voice { get; set; } = SharedHumanoidAppearanceSystem.DefaultVoice;
 
     /// <summary>
     /// Optional custom species string to display for examines. This does not affect the
@@ -148,5 +156,6 @@ public readonly partial struct CustomBaseLayerInfo
     ///     Color of this custom base layer. Null implies skin colour if the corresponding <see cref="HumanoidSpeciesSpriteLayer"/> is set to match skin.
     /// </summary>
     [DataField]
-    public Color? Color { get; init; }
+
+   public Color? Color { get; init; }
 }

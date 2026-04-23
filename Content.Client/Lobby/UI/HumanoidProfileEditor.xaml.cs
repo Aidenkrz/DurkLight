@@ -219,6 +219,14 @@ namespace Content.Client.Lobby.UI
 
             #endregion Gender
 
+            #region Voice
+
+            InitializeVoice();
+
+            #endregion Voice
+
+            #region Species
+
             RefreshSpecies();
 
             SpeciesButton.OnItemSelected += args =>
@@ -239,6 +247,8 @@ namespace Content.Client.Lobby.UI
                 UpdateHairPickers();
             };
             // Far Horizons end
+
+            #endregion Species
 
             #region Skin
 
@@ -1255,6 +1265,7 @@ namespace Content.Client.Lobby.UI
             UpdateAgeEdit();
             UpdateEyePickers();
             UpdateSaveButton();
+            UpdateTTSVoicesControls();
             UpdateMarkings();
             UpdateHairPickers();
             UpdateCMarkingsHair();
@@ -1723,8 +1734,15 @@ namespace Content.Client.Lobby.UI
             }
 
             UpdateGenderControls();
+            UpdateTTSVoicesControls();
             Markings.SetSex(newSex);
             ReloadPreview();
+        }
+
+        private void SetVoice(string newVoice)
+        {
+            Profile = Profile?.WithVoice(newVoice);
+            IsDirty = true;
         }
 
         private void SetGender(Gender newGender)
