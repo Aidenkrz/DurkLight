@@ -44,6 +44,8 @@ public sealed partial class TTSSystem : EntitySystem
     public override void Initialize()
     {
         _cfg.OnValueChanged(CCVars.TTSEnabled, OnTtsEnabledChanged, true);
+        _cfg.OnValueChanged(CCVars.TTSApiUrl, OnTtsEndpointChanged);
+        _cfg.OnValueChanged(CCVars.TTSApiKey, OnTtsEndpointChanged);
 
         SubscribeLocalEvent<TransformSpeechEvent>(OnTransformSpeech);
         SubscribeLocalEvent<TTSComponent, EntitySpokeEvent>(OnEntitySpoke);
@@ -58,6 +60,15 @@ public sealed partial class TTSSystem : EntitySystem
 
         if (enabled)
             await EnsureVoicesDownloaded();
+    }
+
+    private async void OnTtsEndpointChanged(string _)
+    {
+        if (!_isEnabled)
+            return;
+
+        _ttsManager.ClearCache();
+        await EnsureVoicesDownloaded();
     }
 
     private async Task EnsureVoicesDownloaded()
