@@ -170,7 +170,7 @@ public sealed partial class TTSSystem : EntitySystem
             }
 
             var target = Transform(receiver).ParentUid;
-            ICommonSession? session = null;
+            ICommonSession? session;
 
             if (!_actor.TryGetSession(target, out session) || session == null)
                 _actor.TryGetSession(receiver, out session);

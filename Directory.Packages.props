@@ -14,6 +14,7 @@
     </PackageVersion>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="9.0.1" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
+    <PackageVersion Include="OggVorbisEncoder" Version="1.2.1" />
   <PackageVersion Include="OpenTK" Version="4.9.4" />
   <PackageVersion Include="OpenTK.Mathematics" Version="4.9.4" />
     <PackageVersion Include="Veldrid" Version="4.8.0" />

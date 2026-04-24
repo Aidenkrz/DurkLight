@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.IO;
 using Content.Shared.CCVar;
 using Content.Shared.TTS;
 using Robust.Client.Audio;
@@ -128,11 +129,7 @@ public sealed class TTSSystem : EntitySystem
 
     private (EntityUid Entity, AudioComponent Component)? PlayTTSBytes(byte[] data, EntityUid? sourceUid, AudioParams audioParams)
     {
-        var shortArray = new short[data.Length / 2];
-        for (var i = 0; i < shortArray.Length; i++)
-            shortArray[i] = (short) ((data[i * 2 + 1] << 8) | (data[i * 2] & 0xFF));
-
-        var audioStream = _audioManager.LoadAudioRaw(shortArray, 1, 22050);
+        var audioStream = _audioManager.LoadAudioOggVorbis(new MemoryStream(data));
 
         if (sourceUid != null)
             return _audio.PlayEntity(audioStream, sourceUid.Value, null, audioParams);
@@ -142,11 +139,7 @@ public sealed class TTSSystem : EntitySystem
 
     private (EntityUid Entity, AudioComponent Component)? PlayTTSGlobal(byte[] data, AudioParams audioParams)
     {
-        var shortArray = new short[data.Length / 2];
-        for (var i = 0; i < shortArray.Length; i++)
-            shortArray[i] = (short) ((data[i * 2 + 1] << 8) | (data[i * 2] & 0xFF));
-
-        var audioStream = _audioManager.LoadAudioRaw(shortArray, 1, 22050);
+        var audioStream = _audioManager.LoadAudioOggVorbis(new MemoryStream(data));
         return _audio.PlayGlobal(audioStream, null, audioParams);
     }
 

@@ -367,11 +367,22 @@ public sealed class TTSManager
             _connectionVerified = true;
             StopConnectionRetry();
 
-            var audioData = await response.Content.ReadAsByteArrayAsync();
+            var pcmData = await response.Content.ReadAsByteArrayAsync();
             RequestTimings.WithLabels("Success").Observe((DateTime.UtcNow - reqTime).TotalSeconds);
 
-            SaveToCache(key, audioData);
-            return audioData;
+            byte[] oggData;
+            try
+            {
+                oggData = TTSEncoder.EncodePcmToOggVorbis(pcmData);
+            }
+            catch (Exception e)
+            {
+                _sawmill.Error("Failed to encode TTS audio to OGG Vorbis: {Error}", e);
+                return null;
+            }
+
+            SaveToCache(key, oggData);
+            return oggData;
         }
         finally
         {
@@ -480,7 +491,7 @@ public sealed class TTSManager
 
         if (type == "file")
         {
-            var path = Path.Combine(_cachePath.ToString(), $"{key}.wav");
+            var path = Path.Combine(_cachePath.ToString(), $"{key}.ogg");
             return File.Exists(path) ? File.ReadAllBytes(path) : null;
         }
 
@@ -512,7 +523,7 @@ public sealed class TTSManager
             for (var i = 0; i < toDelete && i < files.Count; i++)
                 File.Delete(files[i]);
 
-            File.WriteAllBytes(Path.Combine(cacheDir, $"{key}.wav"), data);
+            File.WriteAllBytes(Path.Combine(cacheDir, $"{key}.ogg"), data);
         }
     }
 
@@ -524,6 +535,8 @@ public sealed class TTSManager
         if (!Directory.Exists(cacheDir))
             return;
 
+        foreach (var file in Directory.EnumerateFiles(cacheDir, "*.ogg"))
+            File.Delete(file);
         foreach (var file in Directory.EnumerateFiles(cacheDir, "*.wav"))
             File.Delete(file);
     }
