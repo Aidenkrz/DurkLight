@@ -1,6 +1,9 @@
 using Content.Server.Chemistry.Containers.EntitySystems;
+using Content.Server.Fluids.EntitySystems;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Server.Popups;
+using Robust.Shared.Audio;
+using Robust.Shared.Audio.Systems;
 using Content.Shared._Mono.Traits.Physical;
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.Components.SolutionManager;
@@ -26,6 +29,8 @@ public sealed class LewdTraitSystem : EntitySystem
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
     [Dependency] private readonly PopupSystem _popupSystem = default!;
     [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
+    [Dependency] private readonly PuddleSystem _puddle = default!; // HardLight
+    [Dependency] private readonly SharedAudioSystem _audio = default!; // HardLight
 
     public override void Initialize()
     {
@@ -308,13 +313,28 @@ public sealed class LewdTraitSystem : EntitySystem
                 return;
             }
 
-            if (quantity > injectSolution.AvailableVolume)
-                quantity = injectSolution.AvailableVolume;
+            // HardLight start
+            var available = injectSolution.AvailableVolume;
+            var injected = quantity > available ? available : quantity;
 
-            var split = _solutionContainer.SplitSolution(entity.Comp.Solution.Value, quantity);
-            _solutionContainer.TryAddSolution(injectSoln.Value, split);
-            _popupSystem.PopupEntity(Loc.GetString("cum-verb-success", ("amount", quantity), ("target", Identity.Entity(args.Args.Used.Value, EntityManager))), entity.Owner, args.Args.User, PopupType.Medium);
-            _popupSystem.PopupEntity(Loc.GetString("cum-verb-success-other", ("amount", quantity), ("target", Identity.Entity(args.Args.User, EntityManager))), entity.Owner, args.Args.Used.Value, PopupType.Medium); // Hardlight
+            if (injected > 0)
+            {
+                var splitInject = _solutionContainer.SplitSolution(entity.Comp.Solution.Value, injected);
+                _solutionContainer.TryAddSolution(injectSoln.Value, splitInject);
+            }
+
+            var overflow = quantity - injected;
+            if (overflow > 0)
+            {
+                var splitOverflow = _solutionContainer.SplitSolution(entity.Comp.Solution.Value, overflow);
+                _puddle.TrySpillAt(args.Args.Used.Value, splitOverflow, out _, sound: false);
+                _audio.PlayPvs(new SoundPathSpecifier("/Audio/Effects/Fluids/splat.ogg"), args.Args.Used.Value);
+                _popupSystem.PopupEntity(Loc.GetString("cum-verb-overflow", ("amount", overflow)), args.Args.Used.Value, PopupType.MediumCaution);
+            }
+
+            _popupSystem.PopupEntity(Loc.GetString("cum-verb-success", ("amount", injected), ("target", Identity.Entity(args.Args.Used.Value, EntityManager))), entity.Owner, args.Args.User, PopupType.Medium);
+            _popupSystem.PopupEntity(Loc.GetString("cum-verb-success-other", ("amount", injected), ("target", Identity.Entity(args.Args.User, EntityManager))), entity.Owner, args.Args.Used.Value, PopupType.Medium);
+            // HardLight end
             return;
         }
     }
